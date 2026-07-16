@@ -32,8 +32,9 @@ export default function Hero({ db, appId }) {
     }, [imagesToDisplay.length]);
 
     return (
-        // Perubahan di sini: rounded-b-[3rem] (mobile) dan [6rem] (desktop) memberikan kurva yang lebih halus & mewah
-        <div className="relative w-full h-[70vh] md:h-[85vh] flex items-center justify-center overflow-hidden bg-slate-900 rounded-b-[3rem] md:rounded-b-[6rem]">
+        // h-[60vh] mobile, h-[80vh] desktop agar proporsional
+        // rounded-b-[2.5rem] mobile, rounded-b-[4rem] desktop untuk lengkungan halus
+        <div className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center overflow-hidden bg-slate-900 rounded-b-[2.5rem] md:rounded-b-[4rem]">
             <div className="absolute inset-0 z-0">
                 {imagesToDisplay.map((img, index) => (
                     <div 
@@ -42,23 +43,24 @@ export default function Hero({ db, appId }) {
                     >
                         <img 
                             src={img} 
-                            className="w-full h-full object-cover object-center brightness-[0.3]" 
+                            // object-bottom: Fokus utama di bagian bawah (bangunan)
+                            // object-cover: Tetap menutupi layar
+                            className="w-full h-full object-cover object-bottom brightness-[0.3]" 
                             alt="Hero background" 
                         />
                     </div>
                 ))}
             </div>
 
-            {/* Menambahkan pb-10 pada container teks agar ada ruang napas dari kurva bawah */}
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 text-center md:text-left pb-10">
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 text-center md:text-left pb-6 md:pb-0">
                 <div className="max-w-3xl">
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 animate-fade-in-up">
+                    <h1 className="text-3xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-3 animate-fade-in-up">
                         SMA IT ANDALAN BONE
                     </h1>
-                    <p className="text-lg md:text-2xl font-bold text-white mb-6 animate-fade-in-up animation-delay-200">
+                    <p className="text-base md:text-2xl font-bold text-white mb-6 animate-fade-in-up animation-delay-200">
                         Berbasis <span className="text-brandRed">Teknologi</span> & <span className="text-brandGreen">Boarding School</span>
                     </p>
-                    <button className="bg-brandRed text-white px-8 py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-xl hover:shadow-red-900/50 animate-fade-in-up animation-delay-400">
+                    <button className="bg-brandRed text-white px-6 py-2.5 md:px-8 md:py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-xl hover:shadow-red-900/50 animate-fade-in-up animation-delay-400">
                         Daftar PPDB Sekarang
                     </button>
                 </div>
