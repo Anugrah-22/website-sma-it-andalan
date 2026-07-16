@@ -28,7 +28,7 @@ export default function PrincipalStats({ stats }) {
                                     <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=256&q=80" alt="Kepala Sekolah" className="w-full h-full object-cover" />
                                 </div>
                                 <div>
-                                    <h3 className="font-display font-bold text-2xl text-gray-900 leading-tight">Dr. Budi Santoso, M.Pd</h3>
+                                    <h3 className="font-display font-bold text-2xl text-gray-900 leading-tight">Alif Salama Samsul, S.Pd., M.Pd.</h3>
                                     <p className="text-brand-green font-medium text-sm">Kepala Sekolah</p>
                                 </div>
                             </div>
