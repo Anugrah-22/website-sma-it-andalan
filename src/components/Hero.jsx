@@ -32,7 +32,8 @@ export default function Hero({ db, appId }) {
     }, [imagesToDisplay.length]);
 
     return (
-        <div className="relative w-full h-[70vh] md:h-[85vh] flex items-center justify-center overflow-hidden bg-slate-900 rounded-b-[2rem] md:rounded-b-[4rem]">
+        // Perubahan di sini: rounded-b-[3rem] (mobile) dan [6rem] (desktop) memberikan kurva yang lebih halus & mewah
+        <div className="relative w-full h-[70vh] md:h-[85vh] flex items-center justify-center overflow-hidden bg-slate-900 rounded-b-[3rem] md:rounded-b-[6rem]">
             <div className="absolute inset-0 z-0">
                 {imagesToDisplay.map((img, index) => (
                     <div 
@@ -48,7 +49,8 @@ export default function Hero({ db, appId }) {
                 ))}
             </div>
 
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 text-center md:text-left">
+            {/* Menambahkan pb-10 pada container teks agar ada ruang napas dari kurva bawah */}
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 text-center md:text-left pb-10">
                 <div className="max-w-3xl">
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 animate-fade-in-up">
                         SMA IT ANDALAN BONE
@@ -63,4 +65,3 @@ export default function Hero({ db, appId }) {
             </div>
         </div>
     );
-}
