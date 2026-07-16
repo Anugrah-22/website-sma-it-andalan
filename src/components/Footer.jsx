@@ -63,7 +63,7 @@ export default function Footer() {
                     <div>
                         <h4 className="font-bold mb-6 text-brandGreen">Kontak</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            <li className="flex items-center gap-3"><i className="ph-fill ph-phone text-brandRed"></i> +62 215-135-8610</li>
+                            <li className="flex items-center gap-3"><i className="ph-fill ph-phone text-brandRed"></i> +6282151358610</li>
                             <li className="flex items-center gap-3"><i className="ph-fill ph-envelope text-brandRed"></i> smaitandalan22@gmail.com</li>
                         </ul>
                     </div>
