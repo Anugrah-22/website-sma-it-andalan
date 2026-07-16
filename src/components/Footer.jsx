@@ -26,14 +26,17 @@ export default function Footer() {
                         <div className="pt-2">
                             <p className="text-gray-400 text-xs mb-3">Temukan Kami di:</p>
                             <div className="flex gap-4">
-                                <a href="https://instagram.com/username_sekolah" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brandRed transition-all">
+                                <a href="https://www.instagram.com/sma_it_andalan?igsh=YTV2ZTlnN3BkbGJt" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brandRed transition-all">
                                     <i className="ph-fill ph-instagram-logo"></i>
                                 </a>
-                                <a href="https://facebook.com/username_sekolah" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 transition-all">
+                                <a href="https://www.facebook.com/profile.php?id=61571555561972" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 transition-all">
                                     <i className="ph-fill ph-facebook-logo"></i>
                                 </a>
-                                <a href="https://tiktok.com/@username_sekolah" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-black transition-all">
+                                <a href="https://www.tiktok.com/@sma_it_andalan_bone?_r=1&_t=ZS-97zWGXtx0yK" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-black transition-all">
                                     <i className="ph-fill ph-tiktok-logo"></i>
+                                </a>
+                                <a href="https://youtube.com/@smaitandalanbone?si=WCHeptZENvNVvQF9" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-red-600 transition-all">
+                                    <i className="ph-fill ph-youtube-logo"></i>
                                 </a>
                             </div>
                         </div>
@@ -46,7 +49,7 @@ export default function Footer() {
                             <li className="cursor-pointer hover:text-white transition-colors" onClick={() => handleNavigate('/')}>Beranda</li>
                             <li className="cursor-pointer hover:text-white transition-colors" onClick={() => handleNavigate('/profil')}>Profil Sekolah</li>
                             
-                            {/* Admin Login dengan gaya berbeda */}
+                            {/* Admin Login */}
                             <li 
                                 className="cursor-pointer text-brandRed font-bold hover:text-red-400 transition-colors mt-6 flex items-center gap-2 border-t border-gray-800 pt-4" 
                                 onClick={() => handleNavigate('/admin')}

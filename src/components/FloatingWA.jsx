@@ -1,9 +1,8 @@
 import React from 'react';
 
 export default function FloatingWA() {
-    // Ganti 628123456789 dengan nomor WA admin sekolah Anda
-    // Gunakan kode negara 62 tanpa angka 0 di depan
-    const phoneNumber = "622151358610"; 
+    // Nomor sudah diperbarui ke format seluler yang benar
+    const phoneNumber = "6282151358610"; 
     const message = "Halo admin, saya ingin bertanya tentang PPDB SMA IT Andalan.";
 
     return (
