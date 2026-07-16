@@ -53,7 +53,7 @@ export default function Hero({ db, appId }) {
             <div className="relative z-10 w-full max-w-7xl mx-auto px-6 text-center md:text-left pb-10">
                 <div className="max-w-3xl">
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4 animate-fade-in-up">
-                        SMA IT ANDALAN BONE
+                        SMA IT ANDALAN
                     </h1>
                     <p className="text-lg md:text-2xl font-bold text-white mb-6 animate-fade-in-up animation-delay-200">
                         Berbasis <span className="text-brandRed">Teknologi</span> & <span className="text-brandGreen">Boarding School</span>
@@ -65,3 +65,4 @@ export default function Hero({ db, appId }) {
             </div>
         </div>
     );
+}
