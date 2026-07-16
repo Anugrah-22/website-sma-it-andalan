@@ -1,7 +1,6 @@
 import React from 'react';
 
 export default function PrincipalStats({ stats }) {
-    // Fungsi untuk memetakan nama ikon dari AdminPanel ke class Phosphor Icon
     const getIcon = (name) => {
         const icons = { 
             'Users': 'ph-users', 
@@ -18,23 +17,38 @@ export default function PrincipalStats({ stats }) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     
-                    {/* Sambutan Kepala Sekolah */}
+                    {/* Bagian Kepala Sekolah */}
                     <div className="relative">
                         <div className="absolute -inset-4 bg-gradient-to-br from-green-500/10 to-red-500/10 rounded-[2.5rem] -z-10 transform -rotate-2"></div>
-                        <div className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100">
-                            <h2 className="text-brand-red font-bold uppercase tracking-widest text-xs mb-6">Sambutan</h2>
-                            <div className="flex items-center gap-6 mb-8">
-                                <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-white shadow-lg shrink-0">
-                                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=256&q=80" alt="Kepala Sekolah" className="w-full h-full object-cover" />
+                        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-100">
+                            <h2 className="text-brand-red font-bold uppercase tracking-widest text-xs mb-8">Sambutan</h2>
+                            
+                            {/* Layout Flexbox */}
+                            <div className="flex flex-col md:flex-row gap-8 items-center">
+                                
+                                {/* Foto (Container diperlebar menjadi 45% agar terlihat besar) */}
+                                <div className="relative shrink-0 w-full md:w-[45%] flex justify-center">
+                                    {/* Lingkaran lembut (blob) diperbesar menyesuaikan foto */}
+                                    <div className="absolute w-48 h-48 md:w-56 md:h-56 bg-green-100 rounded-full blur-3xl opacity-70"></div>
+                                    
+                                    <img 
+                                        src="/kepsek.png" 
+                                        alt="Alif Salama Samsul" 
+                                        // Dihapus max-w-240px agar foto mengisi ruang container
+                                        className="relative z-10 w-full h-auto object-contain drop-shadow-xl" 
+                                    />
                                 </div>
-                                <div>
-                                    <h3 className="font-display font-bold text-2xl text-gray-900 leading-tight">Alif Salama Samsul, S.Pd., M.Pd.</h3>
-                                    <p className="text-brand-green font-medium text-sm">Kepala Sekolah</p>
+
+                                {/* Teks Sambutan */}
+                                <div className="flex-1">
+                                    <h3 className="font-display font-bold text-2xl text-gray-900 leading-tight mb-2">Alif Salama Samsul, S.Pd., M.Pd.</h3>
+                                    <p className="text-brand-green font-medium text-sm mb-6">Kepala Sekolah SMA IT Andalan</p>
+                                    
+                                    <div className="text-gray-600 leading-relaxed italic border-l-4 border-brand-green pl-6">
+                                        "Selamat datang di SMA IT Andalan International Boarding School. Kami berdedikasi membangun generasi yang tidak hanya cerdas dalam teknologi dan akademik, namun juga memiliki kedalaman iman dan akhlak mulia."
+                                    </div>
                                 </div>
                             </div>
-                            <p className="text-gray-600 leading-relaxed italic border-l-4 border-brand-green pl-6">
-                                "Selamat datang di SMA IT Andalan International Boarding School. Kami berdedikasi membangun generasi yang tidak hanya cerdas dalam teknologi dan akademik, namun juga memiliki kedalaman iman dan akhlak mulia."
-                            </p>
                         </div>
                     </div>
 
