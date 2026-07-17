@@ -7,7 +7,7 @@ export default function AdminLogin({ auth }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const AUTHORIZED = ["admin@sekolah.sch.id", "smaitandalan20@gmail.com", "anugrahdwidamawan@gmail.com"];
+    const AUTHORIZED = ["admin@sekolah.sch.id", "smaitandalan22@gmail.com", "anugrahdwidamawan@gmail.com"];
 
     const handleLogin = async (e) => {
         e.preventDefault();
