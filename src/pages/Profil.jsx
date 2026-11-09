@@ -15,13 +15,14 @@ export default function Profil() {
                         </p>
                         
                         <h2 className="text-2xl font-bold text-brandRed mt-8">Visi</h2>
-                        <p>Menjadi sekolah unggulan yang melahirkan generasi berjiwa pemimpin, inovatif, dan berakhlakul karimah di era digital.</p>
+                        <p>Mewujudkan Sekolah Islam Bertaraf Internasional Guna Mencetak Pemimpin yang Andalan, Cerdas, Berkarakter dan Unggul dalam Imtaq dan Iptek.</p>
                         
                         <h2 className="text-2xl font-bold text-brandRed mt-8">Misi</h2>
                         <ul className="list-disc pl-6 space-y-2">
-                            <li>Menyelenggarakan pendidikan berbasis teknologi global.</li>
-                            <li>Menanamkan nilai-nilai keislaman dalam setiap aspek kehidupan sekolah.</li>
-                            <li>Mengembangkan potensi minat dan bakat siswa secara maksimal.</li>
+                            <li>Menyelenggarakan pendidikan berkualitas dan berstandar internasional.</li>
+                            <li>Menyelenggarakan sistem penjaminan mutu dan manajemen profesional.</li>
+                            <li>Mengintegrasikan nilai agama, sains, dan teknologi dalam pengembangan karakter.</li>
+                            <li>Menciptakan budaya belajar yang islami, kreatif, inovatif, dan berwawasan internasional.</li>
                         </ul>
                     </div>
                 </div>
