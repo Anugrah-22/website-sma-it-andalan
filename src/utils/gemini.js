@@ -6,7 +6,9 @@ const TIMEOUT_MS = 30000;
 const RETRY_DELAYS = [1500, 3000]; // jeda antar percobaan ulang pada model utama (ms)
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const isRetryable = (status) => status === 503 || status === 500 || status === 408;
+// Ulangi hanya untuk server sibuk; timeout tidak diulang di model yang sama agar pengguna tidak menunggu lama
+const isRetryable = (status) => status === 503 || status === 500;
+const canFallback = (status) => isRetryable(status) || status === 408;
 
 async function requestOnce(model, payload) {
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
@@ -72,7 +74,7 @@ export const callGemini = async (messages, systemInstruction, schema = null) => 
     }
 
     // 2) Model cadangan (hanya jika error berasal dari server sibuk)
-    if (FALLBACK_MODEL && FALLBACK_MODEL !== MODEL && isRetryable(firstError?.status)) {
+    if (FALLBACK_MODEL && FALLBACK_MODEL !== MODEL && canFallback(firstError?.status)) {
         try {
             return await requestOnce(FALLBACK_MODEL, payload);
         } catch {
