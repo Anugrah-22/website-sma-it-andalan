@@ -1,25 +1,71 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
 import { callGemini } from '../utils/gemini';
 
 const GREETING =
     'Halo! Saya AndalanBot ✨, asisten virtual cerdas SMA IT Andalan International Boarding School. Ada yang bisa saya bantu tentang sekolah, fasilitas, atau pendaftaran PPDB?';
 
-// TODO (isi oleh pihak sekolah): data resmi agar bot tidak mengarang jawaban.
+// Data tetap sekolah (diambil dari Footer, Hero, FloatingWA, PrincipalStats, QuickLinks).
+// Tambahkan di sini bila ada data resmi lain: biaya, jadwal PPDB, fasilitas, ekstrakurikuler, dll.
 const SCHOOL_INFO = `
-- Nama sekolah: SMA IT Andalan International Boarding School
-- Alamat: (isi alamat)
-- Jadwal & biaya PPDB: (isi jadwal dan biaya)
-- Fasilitas: (isi daftar fasilitas)
-- Kontak resmi: (isi nomor WhatsApp / email)
+- Nama sekolah: SMA IT Andalan International Boarding School (SMA IT Andalan Bone)
+- Ciri khas: berbasis teknologi dan boarding school (asrama)
+- Visi singkat: menyiapkan generasi yang berakhlakul karimah, inovatif, dan unggul dalam teknologi
+- Kepala Sekolah: Alif Salama Samsul, S.Pd., M.Pd.
+- Alamat: Ajangpulu, Kec. Cina, Kabupaten Bone, Sulawesi Selatan
+- WhatsApp/telepon: +6282151358610
+- Email: smaitandalan22@gmail.com
+- Portal pendaftaran PPDB: https://ppdb.andal-an.sch.id
+- Instagram: @sma_it_andalan | TikTok: @sma_it_andalan_bone | YouTube: @smaitandalanbone
 `;
 
-const SYSTEM_PROMPT = `Anda adalah AndalanBot, asisten virtual resmi SMA IT Andalan International Boarding School.
-Berikan informasi yang ramah, profesional, dan informatif mengenai sekolah, pendaftaran (PPDB), fasilitas, dan hal terkait.
-Gunakan bahasa Indonesia. Jawab ringkas dan hangat, maksimal 2 paragraf.
-Jawab HANYA berdasarkan data sekolah di bawah ini. Jika informasi tidak tersedia, jujur katakan belum tahu dan arahkan pengguna menghubungi pihak sekolah. Jangan mengarang biaya, tanggal, atau data lain.
+function buildSystemPrompt(dynamicInfo) {
+    return `Anda adalah AndalanBot, asisten virtual resmi SMA IT Andalan International Boarding School (SMA IT Andalan Bone, Ajangpulu, Kec. Cina, Kabupaten Bone, Sulawesi Selatan).
+Gunakan bahasa Indonesia yang ramah, profesional, hangat, dan ringkas (maksimal 2 paragraf).
+
+CAKUPAN: jawab pertanyaan apa pun yang berkaitan dengan sekolah ini: profil, PPDB, biaya, fasilitas, kegiatan, berita, pengumuman, kurikulum, asrama, prestasi, kontak, dan lokasi.
+Jika pertanyaan sama sekali tidak berhubungan dengan sekolah, tolak dengan sopan dan tawarkan bantuan seputar sekolah.
+
+URUTAN SUMBER JAWABAN:
+1. Utamakan DATA SEKOLAH di bawah ini, karena itu data resmi.
+2. Jika tidak ada di sana, gunakan pencarian web, tetapi hanya untuk informasi tentang SMA IT Andalan di Bone. Jangan mencampur dengan sekolah lain yang namanya mirip. Jika hasil pencarian tidak jelas milik sekolah ini, anggap informasi tidak ditemukan.
+3. Jika tetap tidak ditemukan atau Anda tidak yakin, jangan menebak dan jangan mengarang biaya, tanggal, atau persyaratan. Katakan dengan jujur belum memiliki informasinya, lalu arahkan pengguna menghubungi admin sekolah: WhatsApp +6282151358610 atau email smaitandalan22@gmail.com. Untuk pendaftaran, sebutkan juga portal https://ppdb.andal-an.sch.id.
+Untuk informasi penting seperti biaya dan jadwal PPDB, sarankan pengguna memastikan ulang ke admin sekolah.
 
 DATA SEKOLAH:
-${SCHOOL_INFO}`;
+${SCHOOL_INFO}
+${dynamicInfo || ''}`;
+}
+
+// Ambil data terbaru dari Firestore (sumber yang sama dengan website) dan ubah jadi teks untuk prompt.
+const clip = (t, n = 300) => (String(t || '').replace(/\s+/g, ' ').trim().slice(0, n));
+
+async function fetchSchoolData(db, appId) {
+    const read = async (name) => {
+        const snap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', name));
+        return snap.docs
+            .map((d) => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (Number(a.priority) || 99) - (Number(b.priority) || 99));
+    };
+
+    const [stats, announcements, news] = await Promise.all([
+        read('stats').catch(() => []),
+        read('announcements').catch(() => []),
+        read('news').catch(() => []),
+    ]);
+
+    const parts = [];
+    if (stats.length) {
+        parts.push('STATISTIK SEKOLAH:\n' + stats.map((s) => `- ${s.label || s.title}: ${s.value || s.excerpt || ''}`).join('\n'));
+    }
+    if (announcements.length) {
+        parts.push('PENGUMUMAN TERBARU:\n' + announcements.slice(0, 8).map((a) => `- ${a.title} (${a.date || '-'}): ${clip(a.excerpt || a.value)}`).join('\n'));
+    }
+    if (news.length) {
+        parts.push('BERITA TERBARU:\n' + news.slice(0, 8).map((n) => `- ${n.title} (${n.date || '-'}): ${clip(n.excerpt || n.value)}`).join('\n'));
+    }
+    return parts.join('\n\n');
+}
 
 const MAX_HISTORY = 12; // batasi riwayat yang dikirim agar hemat token & tidak melebihi limit
 
@@ -79,7 +125,7 @@ function buildGeminiHistory(messages) {
         .filter((_, i, arr) => !(i === 0 && arr[0].role !== 'user'));
 }
 
-export default function VirtualAssistant() {
+export default function VirtualAssistant({ db, appId }) {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([{ role: 'model', text: GREETING }]);
     const [input, setInput] = useState('');
@@ -87,6 +133,8 @@ export default function VirtualAssistant() {
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
     const isMounted = useRef(true);
+    const [schoolData, setSchoolData] = useState('');
+    const dataLoaded = useRef(false);
 
     useEffect(() => {
         isMounted.current = true;
@@ -99,6 +147,18 @@ export default function VirtualAssistant() {
             inputRef.current?.focus();
         }
     }, [messages, isOpen, isLoading]);
+
+    // Muat data website sekali saja, saat chat pertama kali dibuka
+    useEffect(() => {
+        if (!isOpen || dataLoaded.current || !db || !appId) return;
+        dataLoaded.current = true;
+        fetchSchoolData(db, appId)
+            .then((text) => { if (isMounted.current) setSchoolData(text); })
+            .catch((e) => {
+                console.error('Gagal memuat data website untuk chatbot:', e);
+                dataLoaded.current = false; // coba lagi saat chat dibuka kembali
+            });
+    }, [isOpen, db, appId]);
 
     const addMessage = (msg) => {
         if (isMounted.current) setMessages((prev) => [...prev, msg]);
@@ -116,7 +176,7 @@ export default function VirtualAssistant() {
 
         try {
             const geminiMessages = buildGeminiHistory(newMessages);
-            const res = await callGemini(geminiMessages, SYSTEM_PROMPT);
+            const res = await callGemini(geminiMessages, buildSystemPrompt(schoolData), null, { useSearch: true });
 
             const candidate = res?.candidates?.[0];
             const aiResponse = candidate?.content?.parts
@@ -126,7 +186,11 @@ export default function VirtualAssistant() {
                 .trim();
 
             if (aiResponse) {
-                addMessage({ role: 'model', text: aiResponse });
+                const sources = (candidate?.groundingMetadata?.groundingChunks || [])
+                    .map((c) => c.web)
+                    .filter((w) => w?.uri)
+                    .slice(0, 3);
+                addMessage({ role: 'model', text: aiResponse, sources });
             } else {
                 console.error('Respons Gemini kosong:', res);
                 // jawaban kosong / diblokir filter keamanan
@@ -191,6 +255,16 @@ export default function VirtualAssistant() {
                                 }`}
                             >
                                 <p className="leading-relaxed whitespace-pre-wrap break-words">{msg.text}</p>
+                                {msg.sources?.length > 0 && (
+                                    <div className="mt-2 pt-2 border-t border-gray-100 text-[11px] text-gray-500">
+                                        <span>Sumber: </span>
+                                        {msg.sources.map((s, i) => (
+                                            <a key={i} href={s.uri} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline mr-2">
+                                                {s.title || `Sumber ${i + 1}`}
+                                            </a>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}

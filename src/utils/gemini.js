@@ -48,7 +48,7 @@ async function requestOnce(model, payload) {
     }
 }
 
-export const callGemini = async (messages, systemInstruction, schema = null) => {
+export const callGemini = async (messages, systemInstruction, schema = null, options = {}) => {
     if (!API_KEY) {
         throw new Error('VITE_GEMINI_API_KEY tidak ditemukan di .env (restart dev server setelah mengubah .env)');
     }
@@ -59,8 +59,28 @@ export const callGemini = async (messages, systemInstruction, schema = null) => 
     };
     if (schema) {
         payload.generationConfig = { responseMimeType: 'application/json', responseSchema: schema };
+    } else if (options.useSearch) {
+        // Google Search grounding: model mencari info di internet bila perlu
+        payload.tools = [{ google_search: {} }];
     }
 
+    // Jika fitur pencarian ditolak (400/403), ulangi tanpa pencarian agar chatbot tetap menjawab
+    if (payload.tools) {
+        try {
+            return await callWithRetry(payload);
+        } catch (e) {
+            if (e.status === 400 || e.status === 403) {
+                console.warn('Pencarian web ditolak, mencoba tanpa pencarian:', e.message);
+                delete payload.tools;
+            } else {
+                throw e;
+            }
+        }
+    }
+    return callWithRetry(payload);
+};
+
+async function callWithRetry(payload) {
     // 1) Model utama, dengan percobaan ulang jika server sibuk
     let firstError;
     for (let i = 0; i <= RETRY_DELAYS.length; i++) {
@@ -83,4 +103,4 @@ export const callGemini = async (messages, systemInstruction, schema = null) => 
     }
 
     throw firstError;
-};
+}
