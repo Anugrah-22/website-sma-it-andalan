@@ -13,6 +13,7 @@ const SCHOOL_INFO = `
 - Visi singkat: menyiapkan generasi yang berakhlakul karimah, inovatif, dan unggul dalam teknologi
 - Kepala Sekolah: Alif Salama Samsul, S.Pd., M.Pd.
 - Alamat: Ajangpulu, Kec. Cina, Kabupaten Bone, Sulawesi Selatan
+- Lokasi di Google Maps (bagikan tautan ini jika ditanya lokasi/maps/rute): https://www.google.com/maps/place/SMA+Islam+Terpadu+Andalan+Bone/@-4.6601212,120.2301959,1050m/data=!3m1!1e3!4m6!3m5!1s0x2dbde50074260837:0xf5b6d8bcb049197f!8m2!3d-4.6573757!4d120.2305461?hl=id
 - WhatsApp/telepon: +6282151358610
 - Email: smaitandalan22@gmail.com
 - Portal pendaftaran PPDB: https://ppdb.andal-an.sch.id
@@ -65,6 +66,21 @@ async function fetchSchoolData(db, appId) {
         parts.push('BERITA TERBARU:\n' + news.slice(0, 8).map((n) => `- ${n.title} (${n.date || '-'}): ${clip(n.excerpt || n.value)}`).join('\n'));
     }
     return parts.join('\n\n');
+}
+
+// Ubah URL di teks jawaban menjadi tautan yang bisa diklik
+function renderWithLinks(text) {
+    return String(text).split(/(https?:\/\/[^\s]+)/g).map((part, i) => {
+        if (!/^https?:\/\//.test(part)) return part;
+        const url = part.replace(/[).,;!?]+$/, '');
+        const trailing = part.slice(url.length);
+        return (
+            <React.Fragment key={i}>
+                <a href={url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline break-all">{url}</a>
+                {trailing}
+            </React.Fragment>
+        );
+    });
 }
 
 const MAX_HISTORY = 12; // batasi riwayat yang dikirim agar hemat token & tidak melebihi limit
@@ -132,6 +148,7 @@ export default function VirtualAssistant({ db, appId }) {
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
+    const dialogRef = useRef(null);
     const isMounted = useRef(true);
     const [schoolData, setSchoolData] = useState('');
     const dataLoaded = useRef(false);
@@ -140,6 +157,11 @@ export default function VirtualAssistant({ db, appId }) {
         isMounted.current = true;
         return () => { isMounted.current = false; };
     }, []);
+
+    // 'inert' menonaktifkan fokus & aksesibilitas saat chat tertutup (pengganti aria-hidden)
+    useEffect(() => {
+        if (dialogRef.current) dialogRef.current.inert = !isOpen;
+    }, [isOpen]);
 
     useEffect(() => {
         if (isOpen) {
@@ -215,9 +237,9 @@ export default function VirtualAssistant({ db, appId }) {
         <div className="fixed bottom-24 right-6 z-50 flex flex-col items-end">
             {/* Chat Window */}
             <div
+                ref={dialogRef}
                 role="dialog"
                 aria-label="Chat AndalanBot"
-                aria-hidden={!isOpen}
                 className={`bg-white w-[90vw] sm:w-96 rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 origin-bottom-right mb-4 ${
                     isOpen ? 'scale-100 opacity-100 visible' : 'scale-0 opacity-0 invisible pointer-events-none h-0 mb-0'
                 }`}
@@ -254,7 +276,7 @@ export default function VirtualAssistant({ db, appId }) {
                                         : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
                                 }`}
                             >
-                                <p className="leading-relaxed whitespace-pre-wrap break-words">{msg.text}</p>
+                                <p className="leading-relaxed whitespace-pre-wrap break-words">{msg.role === 'user' ? msg.text : renderWithLinks(msg.text)}</p>
                                 {msg.sources?.length > 0 && (
                                     <div className="mt-2 pt-2 border-t border-gray-100 text-[11px] text-gray-500">
                                         <span>Sumber: </span>
