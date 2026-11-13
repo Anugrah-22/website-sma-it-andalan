@@ -1,14 +1,17 @@
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 // Model utama & cadangan bisa diganti lewat .env tanpa mengubah kode
-const MODEL = import.meta.env.VITE_GEMINI_MODEL || 'gemini-3.6-flash';
-const FALLBACK_MODEL = import.meta.env.VITE_GEMINI_FALLBACK_MODEL || 'gemini-3.5-flash-lite';
+const MODEL = import.meta.env.VITE_GEMINI_MODEL || 'gemini-3.5-flash-lite';
+const FALLBACK_MODEL = import.meta.env.VITE_GEMINI_FALLBACK_MODEL || 'gemini-3.1-flash-lite';
 const TIMEOUT_MS = 30000;
+// Pencarian web MATI secara bawaan, karena paket gratis tidak menyediakan search grounding untuk Gemini 3+.
+// Aktifkan setelah billing menyala: VITE_GEMINI_SEARCH=true di .env
+const SEARCH_ENABLED = import.meta.env.VITE_GEMINI_SEARCH === 'true';
 const RETRY_DELAYS = [1500, 3000]; // jeda antar percobaan ulang pada model utama (ms)
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // Ulangi hanya untuk server sibuk; timeout tidak diulang di model yang sama agar pengguna tidak menunggu lama
 const isRetryable = (status) => status === 503 || status === 500;
-const canFallback = (status) => isRetryable(status) || status === 408;
+const canFallback = (status) => isRetryable(status) || status === 408 || status === 429;
 
 async function requestOnce(model, payload) {
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
@@ -59,7 +62,7 @@ export const callGemini = async (messages, systemInstruction, schema = null, opt
     };
     if (schema) {
         payload.generationConfig = { responseMimeType: 'application/json', responseSchema: schema };
-    } else if (options.useSearch) {
+    } else if (options.useSearch && SEARCH_ENABLED) {
         // Google Search grounding: model mencari info di internet bila perlu
         payload.tools = [{ google_search: {} }];
     }
@@ -69,7 +72,7 @@ export const callGemini = async (messages, systemInstruction, schema = null, opt
         try {
             return await callWithRetry(payload);
         } catch (e) {
-            if (e.status === 400 || e.status === 403) {
+            if (e.status === 400 || e.status === 403 || e.status === 429) {
                 console.warn('Pencarian web ditolak, mencoba tanpa pencarian:', e.message);
                 delete payload.tools;
             } else {
